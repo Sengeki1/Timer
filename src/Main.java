@@ -1,21 +1,25 @@
-import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 public class Main {
     public static void main(String[] args) {
         Random rand = new Random();
+        ThreadLocal<Integer> value = new ThreadLocal<>();
+        int[] listDraw = new int[6];
 
         Timer timer = new Timer();
-        Task task = new Task();
 
-        timer.schedule(task, 500, 1000);
+        for (int i = 0; i < 6; i++) {
+            Thread thread = new DrawNumbers(value, listDraw, i, timer);
+            thread.start();
+        }
 
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
                 timer.cancel();
-                System.out.println("O ultimo valor gerado foi: "+ task.get());
+                for (int i = 0; i < 6; i++) {
+                    System.out.println("O ultimo numero gerado foi: " + listDraw[i]);
+                }
             }
         }, rand.nextInt(10000, 30000));
     }
